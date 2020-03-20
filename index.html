@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Elixar Systems</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<div class="bg-contact2" style="background-image: url('images/bg-01.jpg');">
+		<div class="container-contact2">
+			<div class="wrap-contact2">
+				<form class="contact2-form validate-form" id = "contactForm">
+					<span class="contact2-form-logo">
+						<img src="images/Elixar.PNG">
+					</span>
+					<span class="contact2-form-title">
+						Jobs / Interns
+					</span>
+					<div class="wrap-input2 validate-input" data-validate="Name is required">
+						<input class="input2" type="text" name="name" id = "name">
+						<span class="focus-input2" data-placeholder="NAME"></span>
+					</div>
+
+					<div class="wrap-input2 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+						<input class="input2" type="text" name="email" id  = "email">
+						<span class="focus-input2" data-placeholder="EMAIL"></span>
+					</div>
+
+					<div class="wrap-input2 validate-input" data-validate = "Valid PHONE is required">
+						<input class="input2" type="number" name="phone" id  = "phone">
+						<span class="focus-input2" data-placeholder="PHONE"></span>
+					</div>
+
+					<div class="wrap-input2 validate-input" data-validate="GITHUB is required">
+						<input class="input2" type="text" name="github" id = "github">
+						<span class="focus-input2" data-placeholder="GITHUB"></span>
+					</div>
+
+					<div class="wrap-input2 validate-input" data-validate = "LINKEDIN is required">
+						<input class="input2" type="text" name="linkedin" id = "linkedin">
+						<span class="focus-input2" data-placeholder="LINKEDIN"></span>
+					</div>
+
+					<div class="wrap-input2 validate-input" data-validate = "Message is required">
+						<textarea class="input2" name="message" id  = "message"></textarea>
+						<span class="focus-input2" data-placeholder="MESSAGE"></span>
+					</div>
+
+					<div class="container-contact2-form-btn">
+						<div class="wrap-contact2-form-btn">
+							<div class="contact2-form-bgbtn"></div>
+							<input type="file" name ="file" id ="file" multiple = "" class="contact2-form-res">
+							<label for="file" class="contact2-form-btn">Upload Resume(YourName.pdf)</label>
+						</div>
+						<div class="wrap-contact2-form-btn">
+							<div class="contact2-form-bgbtn"></div>
+							<button class="contact2-form-btn" type = "submit">
+								Submit
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-database.js"></script> 
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-storage.js"></script>
+
+	<!-- TODO: Add SDKs for Firebase products that you want to use
+    	 https://firebase.google.com/docs/web/setup#available-libraries -->
+	<script src="https://www.gstatic.com/firebasejs/7.11.0/firebase-analytics.js"></script>
+
+	<script>
+  	// Your web app's Firebase configuration
+	var firebaseConfig = {
+    	apiKey: "AIzaSyA5FkiENboylPC74dBiQnZlgWt1mlDgqfU",
+    	authDomain: "elixar-f9ed1.firebaseapp.com",
+    	databaseURL: "https://elixar-f9ed1.firebaseio.com",
+    	projectId: "elixar-f9ed1",
+    	storageBucket: "elixar-f9ed1.appspot.com",
+    	messagingSenderId: "303510902156",
+    	appId: "1:303510902156:web:f34bf8d6a641bdf19032a9",
+    	measurementId: "G-2GKDZ2HF97"
+  	};
+  	// Initialize Firebase
+  	firebase.initializeApp(firebaseConfig);
+	firebase.analytics();
+	// Reference messages collection
+	var messagesRef = firebase.database().ref('messages');
+
+	// Listen for form submit
+	document.getElementById('contactForm').addEventListener('submit', submitForm);
+
+	// Submit form
+	function submitForm(e){
+  	e.preventDefault();
+  	// Get values
+  	var name = getInputVal('name');
+  	var email = getInputVal('email');
+  	var phone = getInputVal('phone');
+	var linkedin = getInputVal('linkedin');
+  	var github = getInputVal('github');  
+	var message = getInputVal('message');
+
+  	// Save message
+  	saveMessage(name, email, linkedin, github, phone, message);
+	document.getElementById('contactForm').reset();
+	}
+
+	// Function to get get form values
+	function getInputVal(id){
+  	return document.getElementById(id).value;
+	}
+
+	// Save message to firebase
+	function saveMessage(name, email, linkedin, github, phone, message){
+  	var newMessageRef = messagesRef.push();
+  	newMessageRef.set({
+    	name: name,
+    	email:email,
+		phone:phone,
+		linkedin: linkedin,
+		github: github,
+    	message:message
+ 	 });
+	}
+
+	//For Pdf
+	file.addEventListener('change',function(e){
+		for(let i = 0;i<e.target.files.length;i++){
+			let fileResume =  e.target.files[i];
+			let storageRef = firebase.storage().ref("Resume: " + fileResume.name);
+			let task = storageRef.put(fileResume);
+		}
+	});  
+	</script>
+
+
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="vendor/select2/select2.min.js"></script>
+	<!--<script src="js/main.js"></script>-->
+
+</body>
+</html>
